@@ -5,27 +5,21 @@
 //  Core data models for commit tracking
 //
 
-import Foundation
+@preconcurrency import Foundation
 
 /// Represents a single day's commit activity
-struct CommitDay: Codable, Identifiable, Equatable {
-    let id: UUID
+struct CommitDay: Codable, Identifiable, Equatable, Sendable {
+    let id: UUID = UUID()
     let date: Date
     let commitCount: Int
 
     var hasCommits: Bool {
         commitCount > 0
     }
-
-    init(id: UUID = UUID(), date: Date, commitCount: Int) {
-        self.id = id
-        self.date = date
-        self.commitCount = commitCount
-    }
 }
 
 /// Complete commit history for a user
-struct CommitHistory: Codable {
+struct CommitHistory: Codable, Sendable {
     let username: String
     let days: [CommitDay]
     let lastFetched: Date
@@ -54,10 +48,20 @@ struct CommitHistory: Codable {
     func activeDays() -> [CommitDay] {
         return days.filter { $0.hasCommits }
     }
+
+    /// Get commit day for a specific date
+    func commits(for date: Date) -> CommitDay? {
+        let calendar = Calendar.current
+        let targetDay = calendar.startOfDay(for: date)
+
+        return days.first { day in
+            calendar.startOfDay(for: day.date) == targetDay
+        }
+    }
 }
 
 /// Statistics about commit streaks and activity
-struct StreakStatistics {
+struct StreakStatistics: Sendable {
     let currentStreak: Int
     let longestStreak: Int
     let activeDaysThisMonth: Int
@@ -75,21 +79,11 @@ struct StreakStatistics {
 }
 
 /// User settings and preferences
-struct UserSettings: Codable {
-    var username: String?
-    var hasCompletedOnboarding: Bool
-    var lastRefreshDate: Date?
-    var refreshInterval: TimeInterval // in seconds
-
-    init(username: String? = nil,
-         hasCompletedOnboarding: Bool = false,
-         lastRefreshDate: Date? = nil,
-         refreshInterval: TimeInterval = 3600 * 3) { // 3 hours default
-        self.username = username
-        self.hasCompletedOnboarding = hasCompletedOnboarding
-        self.lastRefreshDate = lastRefreshDate
-        self.refreshInterval = refreshInterval
-    }
+struct UserSettings: Codable, Sendable {
+    var username: String? = nil
+    var hasCompletedOnboarding: Bool = false
+    var lastRefreshDate: Date? = nil
+    var refreshInterval: TimeInterval = 3600 * 3 // 3 hours default
 
     /// Check if data needs refresh based on interval
     var needsRefresh: Bool {

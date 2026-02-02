@@ -5,7 +5,7 @@
 //  Manages local caching of commit data
 //
 
-import Foundation
+@preconcurrency import Foundation
 
 enum CacheError: Error {
     case invalidDirectory
@@ -14,14 +14,14 @@ enum CacheError: Error {
     case corruptedData
 }
 
-actor CacheManager {
-    private let fileManager = FileManager.default
+final class CacheManager {
     private let cacheFileName = "commit_history.json"
     private let settingsFileName = "user_settings.json"
     private let cacheMaxAge: TimeInterval = 3600 // 1 hour
 
     /// Get the cache directory URL
     private var cacheDirectory: URL? {
+        let fileManager = FileManager.default
         guard let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
@@ -65,7 +65,7 @@ actor CacheManager {
 
         let fileURL = directory.appendingPathComponent(cacheFileName)
 
-        guard fileManager.fileExists(atPath: fileURL.path) else {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
             throw CacheError.failedToRead
         }
 
@@ -85,7 +85,7 @@ actor CacheManager {
     func hasCachedData() -> Bool {
         guard let directory = cacheDirectory else { return false }
         let fileURL = directory.appendingPathComponent(cacheFileName)
-        return fileManager.fileExists(atPath: fileURL.path)
+        return FileManager.default.fileExists(atPath: fileURL.path)
     }
 
     /// Check if cached data is still valid (not expired)
@@ -93,7 +93,7 @@ actor CacheManager {
         guard let directory = cacheDirectory else { return false }
         let fileURL = directory.appendingPathComponent(cacheFileName)
 
-        guard let attributes = try? fileManager.attributesOfItem(atPath: fileURL.path),
+        guard let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path),
               let modificationDate = attributes[.modificationDate] as? Date else {
             return false
         }
@@ -110,8 +110,8 @@ actor CacheManager {
 
         let fileURL = directory.appendingPathComponent(cacheFileName)
 
-        if fileManager.fileExists(atPath: fileURL.path) {
-            try fileManager.removeItem(at: fileURL)
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            try FileManager.default.removeItem(at: fileURL)
         }
     }
 
@@ -143,7 +143,7 @@ actor CacheManager {
 
         let fileURL = directory.appendingPathComponent(settingsFileName)
 
-        guard fileManager.fileExists(atPath: fileURL.path) else {
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
             // Return default settings if file doesn't exist
             return UserSettings()
         }
@@ -170,8 +170,8 @@ actor CacheManager {
         }
 
         let settingsURL = directory.appendingPathComponent(settingsFileName)
-        if fileManager.fileExists(atPath: settingsURL.path) {
-            try fileManager.removeItem(at: settingsURL)
+        if FileManager.default.fileExists(atPath: settingsURL.path) {
+            try FileManager.default.removeItem(at: settingsURL)
         }
     }
 }

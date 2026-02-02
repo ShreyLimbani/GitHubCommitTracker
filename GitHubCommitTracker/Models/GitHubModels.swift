@@ -5,48 +5,48 @@
 //  Models for GitHub API responses
 //
 
-import Foundation
+@preconcurrency import Foundation
 
 /// Root response for GraphQL query
-struct GitHubGraphQLResponse: Codable {
+struct GitHubGraphQLResponse: Codable, Sendable {
     let data: GitHubData?
     let errors: [GitHubError]?
 }
 
-struct GitHubData: Codable {
+struct GitHubData: Codable, Sendable {
     let user: GitHubUser?
 }
 
-struct GitHubUser: Codable {
+struct GitHubUser: Codable, Sendable {
     let login: String?
     let contributionsCollection: ContributionsCollection
 }
 
-struct ContributionsCollection: Codable {
+struct ContributionsCollection: Codable, Sendable {
     let contributionCalendar: ContributionCalendar
 }
 
-struct ContributionCalendar: Codable {
+struct ContributionCalendar: Codable, Sendable {
     let totalContributions: Int
     let weeks: [ContributionWeek]
 }
 
-struct ContributionWeek: Codable {
+struct ContributionWeek: Codable, Sendable {
     let contributionDays: [ContributionDay]
 }
 
-struct ContributionDay: Codable {
+struct ContributionDay: Codable, Sendable {
     let contributionCount: Int
     let date: String  // Format: "YYYY-MM-DD"
 }
 
-struct GitHubError: Codable {
+struct GitHubError: Codable, Sendable {
     let message: String
     let type: String?
 }
 
 /// REST API response for user info (for token validation)
-struct GitHubUserInfo: Codable {
+struct GitHubUserInfo: Codable, Sendable {
     let login: String
     let id: Int
     let name: String?

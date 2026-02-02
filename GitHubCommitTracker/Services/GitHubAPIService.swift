@@ -5,7 +5,7 @@
 //  GitHub GraphQL API client for fetching commit data
 //
 
-import Foundation
+@preconcurrency import Foundation
 
 enum GitHubAPIError: Error {
     case unauthorized
@@ -44,7 +44,7 @@ enum GitHubAPIError: Error {
     }
 }
 
-actor GitHubAPIService {
+final class GitHubAPIService {
     private let graphQLEndpoint = URL(string: "https://api.github.com/graphql")!
     private let restEndpoint = URL(string: "https://api.github.com")!
     private let session = URLSession.shared

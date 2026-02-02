@@ -67,7 +67,8 @@ struct CalendarView: View {
         return VStack(spacing: Constants.UI.calendarSpacing) {
             ForEach(0..<weeks.count, id: \.self) { weekIndex in
                 HStack(spacing: Constants.UI.calendarSpacing) {
-                    ForEach(weeks[weekIndex], id: \.self) { date in
+                    ForEach(0..<weeks[weekIndex].count, id: \.self) { dayIndex in
+                        let date = weeks[weekIndex][dayIndex]
                         if let date = date {
                             CalendarDayView(
                                 date: date,

@@ -60,7 +60,7 @@ class MenuBarViewModel {
     /// Load initial data on app launch
     func loadInitialData() async {
         // Load settings
-        if let loadedSettings = try? await cacheManager.loadSettings() {
+        if let loadedSettings = try? cacheManager.loadSettings() {
             settings = loadedSettings
         }
 
@@ -71,16 +71,16 @@ class MenuBarViewModel {
         }
 
         // Load cached data immediately for instant UI
-        await loadCachedData()
+        loadCachedData()
 
         // Then fetch fresh data in background
         await refreshData()
     }
 
     /// Load commit history from cache
-    func loadCachedData() async {
+    func loadCachedData() {
         do {
-            let cachedHistory = try await cacheManager.loadCommitHistory()
+            let cachedHistory = try cacheManager.loadCommitHistory()
             commitHistory = cachedHistory
             streakStats = StreakCalculator.calculateStatistics(from: cachedHistory)
             lastUpdateTime = cachedHistory.lastFetched
@@ -121,11 +121,11 @@ class MenuBarViewModel {
             lastUpdateTime = Date()
 
             // Cache the data
-            try? await cacheManager.saveCommitHistory(newHistory)
+            try? cacheManager.saveCommitHistory(newHistory)
 
             // Update settings
             settings.lastRefreshDate = Date()
-            try? await cacheManager.saveSettings(settings)
+            try? cacheManager.saveSettings(settings)
 
         } catch let error as GitHubAPIError {
             errorMessage = error.localizedDescription
@@ -170,7 +170,7 @@ class MenuBarViewModel {
             // Update settings
             settings.username = username
             settings.hasCompletedOnboarding = true
-            try? await cacheManager.saveSettings(settings)
+            try? cacheManager.saveSettings(settings)
 
             // Close settings and fetch data
             showSettings = false
@@ -185,7 +185,7 @@ class MenuBarViewModel {
 
     func logout() async {
         try? KeychainService.deleteToken()
-        try? await cacheManager.clearAllCache()
+        try? cacheManager.clearAllCache()
 
         commitHistory = nil
         streakStats = .empty
