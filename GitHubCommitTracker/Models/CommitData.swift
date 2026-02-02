@@ -73,3 +73,27 @@ struct StreakStatistics {
         )
     }
 }
+
+/// User settings and preferences
+struct UserSettings: Codable {
+    var username: String?
+    var hasCompletedOnboarding: Bool
+    var lastRefreshDate: Date?
+    var refreshInterval: TimeInterval // in seconds
+
+    init(username: String? = nil,
+         hasCompletedOnboarding: Bool = false,
+         lastRefreshDate: Date? = nil,
+         refreshInterval: TimeInterval = 3600 * 3) { // 3 hours default
+        self.username = username
+        self.hasCompletedOnboarding = hasCompletedOnboarding
+        self.lastRefreshDate = lastRefreshDate
+        self.refreshInterval = refreshInterval
+    }
+
+    /// Check if data needs refresh based on interval
+    var needsRefresh: Bool {
+        guard let lastRefresh = lastRefreshDate else { return true }
+        return Date().timeIntervalSince(lastRefresh) > refreshInterval
+    }
+}
