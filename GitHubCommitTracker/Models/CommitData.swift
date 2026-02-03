@@ -78,7 +78,7 @@ struct StreakStatistics: Sendable {
     }
 }
 
-/// User settings and preferences
+/// User settings and preferences (Legacy - kept for migration compatibility)
 struct UserSettings: Codable, Sendable {
     var username: String? = nil
     var hasCompletedOnboarding: Bool = false
@@ -89,5 +89,57 @@ struct UserSettings: Codable, Sendable {
     var needsRefresh: Bool {
         guard let lastRefresh = lastRefreshDate else { return true }
         return Date().timeIntervalSince(lastRefresh) > refreshInterval
+    }
+}
+
+/// Appearance mode for the app
+enum AppearanceMode: String, Codable, CaseIterable, Sendable {
+    case light
+    case dark
+    case system
+
+    var displayName: String {
+        switch self {
+        case .light: return "Light"
+        case .dark: return "Dark"
+        case .system: return "System"
+        }
+    }
+}
+
+/// Represents a GitHub account in the app
+struct GitHubAccount: Codable, Identifiable, Equatable, Sendable {
+    let id: String           // username (unique identifier)
+    let username: String
+    let displayName: String?
+    let dateAdded: Date
+    var isActive: Bool
+
+    init(username: String, displayName: String? = nil, dateAdded: Date = Date(), isActive: Bool = true) {
+        self.id = username
+        self.username = username
+        self.displayName = displayName
+        self.dateAdded = dateAdded
+        self.isActive = isActive
+    }
+}
+
+/// App-wide settings supporting multiple accounts
+struct AppSettings: Codable, Sendable {
+    var accounts: [GitHubAccount] = []
+    var activeAccountId: String?
+    var appearanceMode: AppearanceMode = .system
+    var hasCompletedOnboarding: Bool = false
+    var refreshInterval: TimeInterval = 3600 * 3 // 3 hours default
+
+    /// Get the currently active account
+    var activeAccount: GitHubAccount? {
+        guard let accountId = activeAccountId else { return nil }
+        return accounts.first { $0.id == accountId }
+    }
+
+    /// Check if the app has at least one account
+    var hasAccounts: Bool {
+        !accounts.isEmpty
     }
 }

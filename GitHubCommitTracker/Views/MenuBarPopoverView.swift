@@ -10,13 +10,20 @@ import SwiftUI
 struct MenuBarPopoverView: View {
     @Bindable var viewModel: MenuBarViewModel
     @State private var settingsViewModel = SettingsViewModel()
+    @StateObject private var appearanceManager = AppearanceManager.shared
 
     var body: some View {
         ZStack {
             if viewModel.showSettings {
-                // Settings/Onboarding view
-                SettingsView(viewModel: settingsViewModel) { token in
-                    await viewModel.saveToken(token)
+                // Show settings based on mode
+                if viewModel.settingsMode == .onboarding {
+                    // Onboarding view (first account setup)
+                    SettingsView(viewModel: settingsViewModel) { token in
+                        await viewModel.saveToken(token)
+                    }
+                } else {
+                    // Full settings view
+                    EnhancedSettingsView(mainViewModel: viewModel)
                 }
             } else {
                 // Main content view
@@ -24,6 +31,7 @@ struct MenuBarPopoverView: View {
             }
         }
         .frame(width: Constants.UI.popoverWidth, height: Constants.UI.popoverHeight)
+        .preferredColorScheme(appearanceManager.colorScheme)
     }
 
     private var mainContentView: some View {
@@ -71,7 +79,7 @@ struct MenuBarPopoverView: View {
                 Text(Constants.Text.appName)
                     .font(.system(size: 14, weight: .semibold))
 
-                if let username = viewModel.settings.username {
+                if let username = viewModel.appSettings.activeAccount?.username {
                     Text("@\(username)")
                         .font(.system(size: 11))
                         .foregroundColor(.secondary)
@@ -91,7 +99,7 @@ struct MenuBarPopoverView: View {
                 .help("Refresh data")
 
                 // Settings button
-                Button(action: { viewModel.showSettings = true }) {
+                Button(action: { viewModel.openSettings(mode: .fullSettings) }) {
                     Image(systemName: "gearshape")
                         .font(.system(size: 12))
                 }

@@ -8,6 +8,12 @@
 import Foundation
 import SwiftUI
 
+/// Settings display mode
+enum SettingsMode {
+    case onboarding     // First-time setup (add first account)
+    case fullSettings   // Full settings view (manage accounts, appearance, etc.)
+}
+
 @MainActor
 @Observable
 class MenuBarViewModel {
@@ -18,8 +24,9 @@ class MenuBarViewModel {
     var isLoading: Bool = false
     var errorMessage: String?
     var selectedMonth: Date = Date()
-    var settings: UserSettings = UserSettings()
+    var appSettings: AppSettings = AppSettings()
     var showSettings: Bool = false
+    var settingsMode: SettingsMode = .onboarding
     var lastUpdateTime: Date?
 
     // MARK: - Services
@@ -29,11 +36,12 @@ class MenuBarViewModel {
     // MARK: - Computed Properties
 
     var hasToken: Bool {
-        KeychainService.hasToken()
+        guard let activeAccountId = appSettings.activeAccountId else { return false }
+        return KeychainService.hasToken(for: activeAccountId)
     }
 
     var needsOnboarding: Bool {
-        !hasToken || settings.username == nil
+        !appSettings.hasCompletedOnboarding || !appSettings.hasAccounts
     }
 
     var lastUpdateText: String {
@@ -59,13 +67,20 @@ class MenuBarViewModel {
 
     /// Load initial data on app launch
     func loadInitialData() async {
-        // Load settings
-        if let loadedSettings = try? cacheManager.loadSettings() {
-            settings = loadedSettings
+        // Load settings (with automatic migration from legacy)
+        do {
+            appSettings = try cacheManager.loadAppSettings()
+        } catch {
+            print("Failed to load app settings: \(error)")
+            appSettings = AppSettings()
         }
+
+        // Apply saved appearance
+        AppearanceManager.shared.loadFromSettings(appSettings.appearanceMode)
 
         // Check if onboarding is needed
         if needsOnboarding {
+            settingsMode = .onboarding
             showSettings = true
             return
         }
@@ -79,8 +94,10 @@ class MenuBarViewModel {
 
     /// Load commit history from cache
     func loadCachedData() {
+        guard let accountId = appSettings.activeAccountId else { return }
+
         do {
-            let cachedHistory = try cacheManager.loadCommitHistory()
+            let cachedHistory = try cacheManager.loadCommitHistory(for: accountId)
             commitHistory = cachedHistory
             streakStats = StreakCalculator.calculateStatistics(from: cachedHistory)
             lastUpdateTime = cachedHistory.lastFetched
@@ -92,8 +109,8 @@ class MenuBarViewModel {
 
     /// Refresh data from GitHub API
     func refreshData() async {
-        guard let username = settings.username,
-              let token = try? KeychainService.loadToken() else {
+        guard let activeAccount = appSettings.activeAccount,
+              let token = try? KeychainService.loadToken(for: activeAccount.id) else {
             errorMessage = "Missing credentials"
             return
         }
@@ -104,13 +121,13 @@ class MenuBarViewModel {
         do {
             // Fetch contributions from GitHub
             let commitDays = try await apiService.fetchRecentContributions(
-                username: username,
+                username: activeAccount.username,
                 token: token
             )
 
             // Create new history
             let newHistory = CommitHistory(
-                username: username,
+                username: activeAccount.username,
                 days: commitDays,
                 lastFetched: Date()
             )
@@ -120,12 +137,8 @@ class MenuBarViewModel {
             streakStats = StreakCalculator.calculateStatistics(from: newHistory)
             lastUpdateTime = Date()
 
-            // Cache the data
-            try? cacheManager.saveCommitHistory(newHistory)
-
-            // Update settings
-            settings.lastRefreshDate = Date()
-            try? cacheManager.saveSettings(settings)
+            // Cache the data for this account
+            try? cacheManager.saveCommitHistory(newHistory, for: activeAccount.id)
 
         } catch let error as GitHubAPIError {
             errorMessage = error.localizedDescription
@@ -164,13 +177,22 @@ class MenuBarViewModel {
             // Validate token first
             let username = try await apiService.validateToken(token)
 
-            // Save to keychain
-            try KeychainService.saveToken(token)
+            // Create new account
+            let newAccount = GitHubAccount(
+                username: username,
+                displayName: nil,
+                dateAdded: Date(),
+                isActive: true
+            )
 
-            // Update settings
-            settings.username = username
-            settings.hasCompletedOnboarding = true
-            try? cacheManager.saveSettings(settings)
+            // Save token to per-account keychain
+            try KeychainService.saveToken(token, for: username)
+
+            // Update app settings
+            appSettings.accounts = [newAccount]
+            appSettings.activeAccountId = username
+            appSettings.hasCompletedOnboarding = true
+            try? cacheManager.saveAppSettings(appSettings)
 
             // Close settings and fetch data
             showSettings = false
@@ -184,12 +206,135 @@ class MenuBarViewModel {
     }
 
     func logout() async {
-        try? KeychainService.deleteToken()
-        try? cacheManager.clearAllCache()
+        // Delete all account tokens
+        for account in appSettings.accounts {
+            try? KeychainService.deleteToken(for: account.id)
+        }
 
+        // Clear all data
+        try? cacheManager.clearAllData()
+
+        // Reset state
         commitHistory = nil
         streakStats = .empty
-        settings = UserSettings()
+        appSettings = AppSettings()
+        settingsMode = .onboarding
         showSettings = true
+    }
+
+    // MARK: - Account Management
+
+    /// Switch to a different account
+    func switchAccount(to accountId: String) async {
+        guard let account = appSettings.accounts.first(where: { $0.id == accountId }) else {
+            errorMessage = "Account not found"
+            return
+        }
+
+        // Update active account
+        appSettings.activeAccountId = accountId
+        try? cacheManager.saveAppSettings(appSettings)
+
+        // Clear current data
+        commitHistory = nil
+        streakStats = .empty
+        lastUpdateTime = nil
+
+        // Load cached data for new account
+        loadCachedData()
+
+        // Refresh data from API
+        await refreshData()
+    }
+
+    /// Add a new account
+    func addAccount(_ token: String) async throws -> GitHubAccount {
+        // Validate token first
+        let username = try await apiService.validateToken(token)
+
+        // Check if account already exists
+        if appSettings.accounts.contains(where: { $0.username == username }) {
+            throw GitHubAPIError.duplicateAccount
+        }
+
+        // Create new account
+        let newAccount = GitHubAccount(
+            username: username,
+            displayName: nil,
+            dateAdded: Date(),
+            isActive: false
+        )
+
+        // Save token to per-account keychain
+        try KeychainService.saveToken(token, for: username)
+
+        // Add account to settings
+        appSettings.accounts.append(newAccount)
+        try? cacheManager.saveAppSettings(appSettings)
+
+        return newAccount
+    }
+
+    /// Remove an account
+    func removeAccount(_ accountId: String) async {
+        // Don't allow removing the last account
+        guard appSettings.accounts.count > 1 else {
+            await logout()
+            return
+        }
+
+        // Remove account from list
+        appSettings.accounts.removeAll { $0.id == accountId }
+
+        // Delete token from keychain
+        try? KeychainService.deleteToken(for: accountId)
+
+        // Remove account data from cache
+        try? cacheManager.removeAccountData(accountId)
+
+        // If we removed the active account, switch to the first remaining account
+        if appSettings.activeAccountId == accountId {
+            if let firstAccount = appSettings.accounts.first {
+                appSettings.activeAccountId = firstAccount.id
+                await switchAccount(to: firstAccount.id)
+            }
+        } else {
+            // Just save settings
+            try? cacheManager.saveAppSettings(appSettings)
+        }
+    }
+
+    /// Logout current account only
+    func logoutAccount(_ accountId: String) async {
+        // If this is the only account, perform full logout
+        if appSettings.accounts.count == 1 {
+            await logout()
+            return
+        }
+
+        // Otherwise, just remove this account
+        await removeAccount(accountId)
+    }
+
+    // MARK: - Appearance Management
+
+    /// Set app appearance mode
+    func setAppearance(_ mode: AppearanceMode) {
+        appSettings.appearanceMode = mode
+        try? cacheManager.saveAppSettings(appSettings)
+        AppearanceManager.shared.setAppearance(mode)
+    }
+
+    // MARK: - Settings Navigation
+
+    /// Open settings with specified mode
+    func openSettings(mode: SettingsMode) {
+        settingsMode = mode
+        showSettings = true
+    }
+
+    /// Close settings
+    func closeSettings() {
+        showSettings = false
     }
 }

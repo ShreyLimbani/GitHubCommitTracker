@@ -16,6 +16,7 @@ enum GitHubAPIError: Error {
     case noData
     case invalidToken
     case unknownUser
+    case duplicateAccount
 
     var localizedDescription: String {
         switch self {
@@ -40,6 +41,8 @@ enum GitHubAPIError: Error {
             return "Invalid GitHub token"
         case .unknownUser:
             return "User not found on GitHub"
+        case .duplicateAccount:
+            return "This account has already been added"
         }
     }
 }

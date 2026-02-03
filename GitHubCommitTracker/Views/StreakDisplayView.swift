@@ -74,14 +74,7 @@ struct StatRow: View {
     }
 
     private var iconColor: Color {
-        switch icon {
-        case "flame.fill":
-            return .orange
-        case "trophy.fill":
-            return .yellow
-        default:
-            return .blue
-        }
+        return .secondary
     }
 }
 
