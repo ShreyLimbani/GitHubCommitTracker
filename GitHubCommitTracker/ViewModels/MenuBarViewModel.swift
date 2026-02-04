@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import WidgetKit
 
 /// Settings display mode
 enum SettingsMode {
@@ -140,6 +141,9 @@ class MenuBarViewModel {
             // Cache the data for this account
             try? cacheManager.saveCommitHistory(newHistory, for: activeAccount.id)
 
+            // Reload widget timelines to reflect new data
+            WidgetCenter.shared.reloadAllTimelines()
+
         } catch let error as GitHubAPIError {
             errorMessage = error.localizedDescription
         } catch {
@@ -245,6 +249,9 @@ class MenuBarViewModel {
 
         // Refresh data from API
         await refreshData()
+
+        // Reload widget timelines to show new account data
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     /// Add a new account

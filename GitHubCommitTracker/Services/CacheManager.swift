@@ -20,10 +20,31 @@ final class CacheManager {
     private let appSettingsFileName = "app_settings.json"
     private let accountsDirectoryName = "accounts"
     private let cacheMaxAge: TimeInterval = 3600 // 1 hour
+    private let useSharedContainer: Bool
+
+    /// Initialize CacheManager
+    /// - Parameter useSharedContainer: Whether to use App Group shared container (default: true)
+    init(useSharedContainer: Bool = true) {
+        self.useSharedContainer = useSharedContainer
+    }
 
     /// Get the cache directory URL
     private var cacheDirectory: URL? {
         let fileManager = FileManager.default
+
+        // Try shared container first (for widget access)
+        if useSharedContainer,
+           let container = fileManager.containerURL(
+               forSecurityApplicationGroupIdentifier: "group.com.github-commit-tracker.shared"
+           ) {
+            // Create directory if needed
+            if !fileManager.fileExists(atPath: container.path) {
+                try? fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+            }
+            return container
+        }
+
+        // Fallback to Application Support (legacy)
         guard let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
@@ -212,14 +233,8 @@ final class CacheManager {
                         }
                     }
 
-                    // Try to migrate token from legacy keychain
-                    if KeychainService.hasToken() {
-                        if let legacyToken = try? KeychainService.loadToken() {
-                            // Save to per-account keychain
-                            try? KeychainService.saveToken(legacyToken, for: username)
-                            // Keep legacy token for now (don't delete for safety)
-                        }
-                    }
+                    // Note: Token migration handled separately by MenuBarViewModel
+                    // Legacy tokens remain in keychain for backward compatibility
                 }
 
                 // Save the new app settings
@@ -265,6 +280,67 @@ final class CacheManager {
         let legacySettingsURL = directory.appendingPathComponent(settingsFileName)
         if FileManager.default.fileExists(atPath: legacySettingsURL.path) {
             try? FileManager.default.removeItem(at: legacySettingsURL)
+        }
+    }
+
+    // MARK: - Shared Container Migration
+
+    /// Migrate data from Application Support to shared container
+    func migrateToSharedContainer() throws {
+        let fileManager = FileManager.default
+
+        // Get source (Application Support) and destination (shared container)
+        guard let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
+            throw CacheError.invalidDirectory
+        }
+
+        let bundleID = Bundle.main.bundleIdentifier ?? "com.github-commit-tracker"
+        let sourceDirectory = appSupport.appendingPathComponent(bundleID)
+
+        guard let sharedContainer = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: "group.com.github-commit-tracker.shared"
+        ) else {
+            throw CacheError.invalidDirectory
+        }
+
+        // Check if source exists
+        guard fileManager.fileExists(atPath: sourceDirectory.path) else {
+            // Nothing to migrate
+            return
+        }
+
+        // Check if already migrated
+        let sharedSettingsURL = sharedContainer.appendingPathComponent(appSettingsFileName)
+        if fileManager.fileExists(atPath: sharedSettingsURL.path) {
+            // Already migrated
+            return
+        }
+
+        print("Migrating data to shared container...")
+
+        // Migrate app_settings.json
+        let sourceSettingsURL = sourceDirectory.appendingPathComponent(appSettingsFileName)
+        if fileManager.fileExists(atPath: sourceSettingsURL.path) {
+            try fileManager.copyItem(at: sourceSettingsURL, to: sharedSettingsURL)
+            print("Migrated app_settings.json")
+        }
+
+        // Migrate accounts directory
+        let sourceAccountsDir = sourceDirectory.appendingPathComponent(accountsDirectoryName)
+        let destinationAccountsDir = sharedContainer.appendingPathComponent(accountsDirectoryName)
+
+        if fileManager.fileExists(atPath: sourceAccountsDir.path) {
+            try fileManager.copyItem(at: sourceAccountsDir, to: destinationAccountsDir)
+            print("Migrated accounts directory")
+        }
+
+        // Verify migration
+        if fileManager.fileExists(atPath: sharedSettingsURL.path) {
+            print("Migration successful")
+            // Optional: Could delete source files here, but keeping for safety
+            // try? fileManager.removeItem(at: sourceDirectory)
+        } else {
+            throw CacheError.failedToWrite
         }
     }
 }

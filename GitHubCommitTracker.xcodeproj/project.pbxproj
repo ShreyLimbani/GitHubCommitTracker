@@ -6,19 +6,101 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		354DD5AD2F33C84B0059AD9E /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 354DD5AC2F33C84A0059AD9E /* WidgetKit.framework */; };
+		354DD5AF2F33C84B0059AD9E /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 354DD5AE2F33C84B0059AD9E /* SwiftUI.framework */; };
+		354DD5BC2F33C84D0059AD9E /* Commit Tracker WidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 354DD5AA2F33C84A0059AD9E /* Commit Tracker WidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		354DD5BA2F33C84D0059AD9E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 35516E0F2F31098200827539 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 354DD5A92F33C84A0059AD9E;
+			remoteInfo = "Commit Tracker WidgetExtension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		354DD5BD2F33C84D0059AD9E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				354DD5BC2F33C84D0059AD9E /* Commit Tracker WidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		354DD5AA2F33C84A0059AD9E /* Commit Tracker WidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Commit Tracker WidgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		354DD5AC2F33C84A0059AD9E /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		354DD5AE2F33C84B0059AD9E /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		35516E172F31098200827539 /* GitHubCommitTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitHubCommitTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		354DD5C02F33C84D0059AD9E /* Exceptions for "Commit Tracker Widget" folder in "Commit Tracker WidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 354DD5A92F33C84A0059AD9E /* Commit Tracker WidgetExtension */;
+		};
+		354DD5C42F33C8C70059AD9E /* Exceptions for "GitHubCommitTracker" folder in "GitHubCommitTracker" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 35516E162F31098200827539 /* GitHubCommitTracker */;
+		};
+		354DD5CA2F33CB160059AD9E /* Exceptions for "GitHubCommitTracker" folder in "Commit Tracker WidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/CommitData.swift,
+				Models/StreakCalculator.swift,
+				Services/CacheManager.swift,
+				Utilities/Constants.swift,
+				Utilities/DateUtilities.swift,
+			);
+			target = 354DD5A92F33C84A0059AD9E /* Commit Tracker WidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		354DD5B02F33C84B0059AD9E /* Commit Tracker Widget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				354DD5C02F33C84D0059AD9E /* Exceptions for "Commit Tracker Widget" folder in "Commit Tracker WidgetExtension" target */,
+			);
+			path = "Commit Tracker Widget";
+			sourceTree = "<group>";
+		};
 		35516E192F31098200827539 /* GitHubCommitTracker */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				354DD5C42F33C8C70059AD9E /* Exceptions for "GitHubCommitTracker" folder in "GitHubCommitTracker" target */,
+				354DD5CA2F33CB160059AD9E /* Exceptions for "GitHubCommitTracker" folder in "Commit Tracker WidgetExtension" target */,
+			);
 			path = GitHubCommitTracker;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		354DD5A72F33C84A0059AD9E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				354DD5AF2F33C84B0059AD9E /* SwiftUI.framework in Frameworks */,
+				354DD5AD2F33C84B0059AD9E /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		35516E142F31098200827539 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -29,10 +111,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		354DD5AB2F33C84A0059AD9E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				354DD5AC2F33C84A0059AD9E /* WidgetKit.framework */,
+				354DD5AE2F33C84B0059AD9E /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		35516E0E2F31098200827539 = {
 			isa = PBXGroup;
 			children = (
 				35516E192F31098200827539 /* GitHubCommitTracker */,
+				354DD5B02F33C84B0059AD9E /* Commit Tracker Widget */,
+				354DD5AB2F33C84A0059AD9E /* Frameworks */,
 				35516E182F31098200827539 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				35516E172F31098200827539 /* GitHubCommitTracker.app */,
+				354DD5AA2F33C84A0059AD9E /* Commit Tracker WidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,6 +142,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		354DD5A92F33C84A0059AD9E /* Commit Tracker WidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 354DD5C12F33C84D0059AD9E /* Build configuration list for PBXNativeTarget "Commit Tracker WidgetExtension" */;
+			buildPhases = (
+				354DD5A62F33C84A0059AD9E /* Sources */,
+				354DD5A72F33C84A0059AD9E /* Frameworks */,
+				354DD5A82F33C84A0059AD9E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				354DD5B02F33C84B0059AD9E /* Commit Tracker Widget */,
+			);
+			name = "Commit Tracker WidgetExtension";
+			packageProductDependencies = (
+			);
+			productName = "Commit Tracker WidgetExtension";
+			productReference = 354DD5AA2F33C84A0059AD9E /* Commit Tracker WidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		35516E162F31098200827539 /* GitHubCommitTracker */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 35516E222F31098400827539 /* Build configuration list for PBXNativeTarget "GitHubCommitTracker" */;
@@ -55,10 +171,12 @@
 				35516E132F31098200827539 /* Sources */,
 				35516E142F31098200827539 /* Frameworks */,
 				35516E152F31098200827539 /* Resources */,
+				354DD5BD2F33C84D0059AD9E /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				354DD5BB2F33C84D0059AD9E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				35516E192F31098200827539 /* GitHubCommitTracker */,
@@ -80,6 +198,9 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					354DD5A92F33C84A0059AD9E = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					35516E162F31098200827539 = {
 						CreatedOnToolsVersion = 26.2;
 					};
@@ -100,11 +221,19 @@
 			projectRoot = "";
 			targets = (
 				35516E162F31098200827539 /* GitHubCommitTracker */,
+				354DD5A92F33C84A0059AD9E /* Commit Tracker WidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		354DD5A82F33C84A0059AD9E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		35516E152F31098200827539 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,6 +244,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		354DD5A62F33C84A0059AD9E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		35516E132F31098200827539 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,7 +260,85 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		354DD5BB2F33C84D0059AD9E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 354DD5A92F33C84A0059AD9E /* Commit Tracker WidgetExtension */;
+			targetProxy = 354DD5BA2F33C84D0059AD9E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		354DD5BE2F33C84D0059AD9E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "Commit Tracker WidgetExtension.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 68XD7235YK;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Commit Tracker Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Commit Tracker Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github-commit-tracker.GitHubCommitTracker.Commit-Tracker-Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		354DD5BF2F33C84D0059AD9E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "Commit Tracker WidgetExtension.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 68XD7235YK;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Commit Tracker Widget/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "Commit Tracker Widget";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.github-commit-tracker.GitHubCommitTracker.Commit-Tracker-Widget";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		35516E202F31098400827539 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -268,6 +482,7 @@
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GitHubCommitTracker/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -314,6 +529,7 @@
 				ENABLE_RESOURCE_ACCESS_USB = NO;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GitHubCommitTracker/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
@@ -338,6 +554,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		354DD5C12F33C84D0059AD9E /* Build configuration list for PBXNativeTarget "Commit Tracker WidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				354DD5BE2F33C84D0059AD9E /* Debug */,
+				354DD5BF2F33C84D0059AD9E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		35516E122F31098200827539 /* Build configuration list for PBXProject "GitHubCommitTracker" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
