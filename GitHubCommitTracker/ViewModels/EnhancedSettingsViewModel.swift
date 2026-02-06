@@ -74,7 +74,7 @@ class EnhancedSettingsViewModel {
         validationError = nil
 
         do {
-            let newAccount = try await mainViewModel.addAccount(tokenInput)
+            _ = try await mainViewModel.addAccount(tokenInput)
 
             // Successfully added account
             isAddingAccount = false

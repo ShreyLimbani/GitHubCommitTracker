@@ -9,7 +9,7 @@
 
 /// Represents a single day's commit activity
 struct CommitDay: Codable, Identifiable, Equatable, Sendable {
-    let id: UUID = UUID()
+    var id: UUID = UUID()
     let date: Date
     let commitCount: Int
 

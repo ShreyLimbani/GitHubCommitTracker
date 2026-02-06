@@ -230,7 +230,7 @@ class MenuBarViewModel {
 
     /// Switch to a different account
     func switchAccount(to accountId: String) async {
-        guard let account = appSettings.accounts.first(where: { $0.id == accountId }) else {
+        guard appSettings.accounts.first(where: { $0.id == accountId }) != nil else {
             errorMessage = "Account not found"
             return
         }
