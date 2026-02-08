@@ -27,22 +27,7 @@ A native macOS MenuBar app that tracks your GitHub commits and displays streaks.
 - **Dependencies**: Zero (using native frameworks only)
 
 ## Installation
-
-### Option 1: Download Release (Recommended)
-1. Download the latest release from [Releases](https://github.com/ShreyLimbani/GitHubCommitTracker/releases)
-2. Unzip the downloaded file
-3. Drag `GitHubCommitTracker.app` to your Applications folder
-4. **Important**: Since this app is not code-signed, you'll see a security warning. To bypass:
-   - **Right-click** (or Control+click) on `GitHubCommitTracker.app`
-   - Select **"Open"** from the menu
-   - Click **"Open"** in the security dialog
-   - The app will now be trusted for future launches
-5. Grant necessary permissions when prompted
-6. Add your GitHub personal access token in Settings
-
-> **Note**: The "unidentified developer" warning appears because this is an unsigned app. This is normal for open-source macOS apps distributed outside the Mac App Store. You can verify the source code in this repository.
-
-### Option 2: Build from Source
+### Build from Source
 1. Clone this repository:
    ```bash
    git clone https://github.com/ShreyLimbani/GitHubCommitTracker.git
@@ -72,27 +57,6 @@ A native macOS MenuBar app that tracks your GitHub commits and displays streaks.
    - Search for "GitHub Commits"
    - Choose your preferred widget size
    - Click "Add Widget"
-
-## Troubleshooting
-
-### "Apple could not verify..." Security Warning
-
-If you see a warning about an unidentified developer, use one of these methods:
-
-**Method 1: Right-Click to Open** (Easiest)
-- Right-click the app → Select "Open" → Click "Open" in dialog
-
-**Method 2: Remove Quarantine Attribute**
-```bash
-xattr -cr /Applications/GitHubCommitTracker.app
-```
-
-**Method 3: System Settings**
-- Try to open the app (it will be blocked)
-- Go to System Settings → Privacy & Security
-- Click "Open Anyway" next to the blocked app message
-
-This warning appears because the app is not code-signed with an Apple Developer certificate. The app is safe and open-source (you can review all code in this repository).
 
 ## Development Status
 
